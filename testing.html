@@ -10,6 +10,13 @@
 	<div style="width:240px; height:25px; z-index:99;" id="teamName"></div>
 	<div style="width:240px; height:25px; z-index:99;" id="playerName"></div>
     
+	<!--
+	
+	<div id="historyLevel"></div>
+	<div id="seasonLevel"></div>
+	<div id="teamLevel"></div>
+	
+	-->
 
 
 	<script type="text/javascript">
@@ -28,6 +35,11 @@
 	});
 	
 	
+	var history = [{seasondate: 2012, teamname: "Heat", teamimage: "heat.png"},
+				{seasondate: 2011, teamname: "Mavericks", teamimage: "mavericks.png"},
+				{seasondate: 2010, teamname: "Lakers", teamimage: "lakers.png"},
+				{seasondate: 2009, teamname: "Lakers", teamimage: "lakers.png"},
+				{seasondate: 2008, teamname: "Celtics", teamimage: "celtics.png"}];
 	
 	var players = [{playername: "Bryant", overall: 99},
 	            {playername: "Nash", overall: 75},
@@ -38,6 +50,51 @@
 	            {teamname: "Heat", overall: 95},
 				{teamname: "Bobcats", overall: 5},
 				{teamname: "Hornets", overall: 75}];
+				
+	var historyCircle = [// xPos,
+				// yPos,
+				// stroke-width,
+				// stroke,
+				// fill,
+				// arr seasons,
+					// xPos
+					// yPos
+					// stroke-width
+					// stroke color
+					// fill
+					];
+					
+	var seasonCircle = [
+				// main circle
+					// xPos,
+					// yPos,
+					// stroke-width,
+					// stroke,
+					// fill,
+				// arr teamNodes,
+					// teamCircle
+						// xPos
+						// yPos
+						// stroke-width
+						// stroke color
+						// fill
+						// teamImage
+						// Top 5 stats
+					];
+					
+	var fiveStats = [
+				// main circle
+					// xPos
+					// yPos
+					// stroke-width
+					// stroke
+				// node circle stat 1
+				// node circle stat 2
+				// node circle stat 3
+				// node circle stat 4
+				// node circle stat 5
+				// color
+				];
     
 	$('#firstLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 1;');
 	
@@ -93,8 +150,21 @@
 		    						// Animation complete.
 		// 						});})
         .on("dblclick", function(){d3.select(this).style("fill", "black");})
-    	.on("mousedown", animateFirstStep);
-
+    	//.on("mousedown", animateFirstStep);
+		.on("mousedown", multipleAnim());
+	
+	function multipleAnim(){
+		d3.select("#teamName").html("");
+		
+		d3.select(this)
+		  .css('opacity', 0)
+		  .slideDown('slow')
+		  .animate(
+			{ opacity: 1 },
+			{ queue: false, duration: 'slow' }
+		  );
+	}
+	
 	function animateFirstStep(){
 	    // removing team name from screen
 		d3.select("#teamName").html("");
@@ -103,7 +173,7 @@
 		  .attr("class", "abnormalCircle")
 	      .transition()            
 	        .delay(0)            
-	        .duration(1000)
+	        .duration(700)
 	        .attr("cx", width/2)
 			.attr("cy", height/2)
 	        .each("end", animateSecondStep);
@@ -117,20 +187,22 @@
 	
 		d3.select(this)
 	      .transition()
-	        .duration(1500)
+	        .duration(700)
 	        .attr("r", 250)
+			.attr("stroke-width", 10)
 			.each("end", animateLastStep);
 	};
     
 	function animateLastStep(){
 		$('#secondLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 2; display:none');
 		
-		
+		// this describes players' circle properties and stuff
 	    secondSVG.selectAll("circle")
 			.data(players)
 			.enter()
 			.append("svg:circle")
 			.style("stroke", "gray")
+			.style("stroke-width", "3")
 	        .style("fill", "white")
 			.attr("cx", function(d, i){	if(i==0)
 											return width*.5;

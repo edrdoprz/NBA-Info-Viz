@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+	<div id="historyLevel"></div>
+	<div id="seasonLevel"></div>
+	<div id="teamLevel"></div>
+	<div style="width:240px; height:25px; z-index:99;" id="teamName"></div>
+	<div style="width:240px; height:25px; z-index:99;" id="playerName"></div>
+	<button id="backbtn" onClick="allBlack()" style="position:absolute; left:100px; top:100px; display:none;">Back</button>
+
+
+	<script type="text/javascript">
+		var svgHeight = 700;
+		var svgWidth = 1000;
+	
+		var history = [{seasondate: 2012, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2011, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2010, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2009, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2008, cX: svgWidth/2, cY: svgHeight/2, r: 250}];
+	
+		var players = [{playername: "Bryant", overall: 99},
+		            {playername: "Nash", overall: 75},
+		            {playername: "Howard", overall: 85}];
+	
+		var teams = [{teamname: "Lakers", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+		            {teamname: "Bulls", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+		            {teamname: "Heat", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+					{teamname: "Bobcats", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+					{teamname: "Hornets", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+					{teamname: "Thunder", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+					{teamname: "Mavericks", cX: 0, cY: 0, r: 60, strokeWidth: 3},
+					{teamname: "Celtics", cX: 0, cY: 0, r: 60, strokeWidth: 3}];
+				
+
+		function encircle(mainCircle_r, mainCircle_cX, mainCircle_cY, array)
+		{
+		
+			var radian = 0;
+		
+			for (var i = 0; i < array.length; i++)
+			{
+				radian = 2 * i * Math.PI/array.length - Math.PI/2;
+				array[i].cX = Math.round(mainCircle_r * Math.cos(radian) + mainCircle_cX);
+				array[i].cY = Math.round(mainCircle_r * Math.sin(radian) + mainCircle_cY);
+			}
+		}
+	
+		encircle(history[0].r, history[0].cX, history[0].cY, teams);
+	
+		
+		
+		
+		
+		function allBlack()
+		{
+			seasonSVG.selectAll("circle").style("fill", "black");
+			seasonSVG.selectAll("circle").attr("data-black", 1);
+		}
+		
+		
+	
+	    $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+	
+		var historySVG = d3.select("#historyLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight)
+			.append("circle")
+			.style("stroke", "gray")
+	        .style("fill", "white")
+			.attr("class", "normalCircle")
+			.attr("r", 	history[0].r)
+	        .attr("cx", history[0].cX)
+			.attr("cy", history[0].cY)
+			.attr("stroke-width", 20);
+	
+		var seasonSVG = d3.select("#seasonLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight);
+
+	   	var teamSVG = d3.select("#teamLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight);
+    
+		
+		
+		seasonSVG.selectAll("circle")
+			.data(teams)
+			.enter()
+			.append("svg:circle")
+	        .style("stroke", "gray")
+			.style("stroke-width", function(d, i){	return d.strokeWidth })
+	        .style("fill", "white")
+			.attr("data-black", 0)
+			.attr("class", "normalCircle")
+	        .attr("r", 	function(d, i){	return d.r })
+	        .attr("cx", function(d, i){	return d.cX })
+			.attr("cy", function(d, i){	return d.cY })
+	        /*.on("dblclick", function(){	if (this.getAttribute("data-black") == 0) {
+											this.setAttribute("data-black", 1);
+											d3.select(this).style("fill", "back");
+										}
+										else {
+											this.setAttribute("data-black", 0);
+											d3.select(this).style("fill", "white");
+										}
+										})
+			*/
+			.on("click", animateFirstStep);
+		
+		
+		function animateFirstStep(){
+		    // removing team name from screen
+			//d3.select("#teamName").html("");
+			
+			$("#backbtn").attr("style", "position:absolute; left:100px; top:100px; display:visible;");
+
+			d3.select(this)
+			  .attr("class", "abnormalCircle")
+		      .transition()            
+		        .delay(0)            
+		        .duration(700)
+		        .attr("cx", svgWidth/2)
+				.attr("cy", svgHeight/2)
+		        .each("end", animateSecondStep);
+		};
+		
+		function animateSecondStep(){
+			$('.normalCircle').fadeOut(1000, function() {
+				// Animation complete.
+			});
+
+
+			d3.select(this)
+		      .transition()
+		        .duration(700)
+		        .attr("r", 250)
+				.attr("stroke-width", 20);
+				//.each("end", animateLastStep);
+		};
+	</script>
+</body>
+</html>

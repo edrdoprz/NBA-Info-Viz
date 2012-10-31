@@ -30,9 +30,12 @@
 				{seasondate: 2009, cX: svgWidth/2, cY: svgHeight/2, r: 250},
 				{seasondate: 2008, cX: svgWidth/2, cY: svgHeight/2, r: 250}];
 	
-	var players = [{playername: "Bryant", overall: 99},
-	            {playername: "Nash", overall: 75},
-	            {playername: "Howard", overall: 85}];
+	// includes per game stats of each player
+	// max values of each
+	// points: 36, assists: 15, rebounds: 18, blocks: 6, steals: 6, minutes 48
+	var players = [{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3},
+	            {playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1},
+	            {playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8}];
 	
 	var teams = [{teamname: "Lakers", cX: 0, cY: 0, r: 60, strokeWidth: 3},
 	            {teamname: "Bulls", cX: 0, cY: 0, r: 60, strokeWidth: 3},
@@ -101,6 +104,11 @@
 	
 	encircle(history[0].r, history[0].cX, history[0].cY, teams);
 	
+	function drawFiveStats(mainCircle_cX, mainCircle_cY, array)
+	{
+		encircle(40, mainCircle_cX, mainCircle_cY, array);
+	}
+	
 	function seasonCircle(cX, cY, strokeWidth, strokeColor, fillColor) {
 		this.cX = cX;
 		this.cY = cY;
@@ -120,19 +128,6 @@
 	
 	var teamCircles = [new teamCircle(300, 300, 1, 'gray', 'white')];
 	
-	var fiveStats = [
-				// main circle
-					// xPos
-					// yPos
-					// stroke-width
-					// stroke
-				// node circle stat 1
-				// node circle stat 2
-				// node circle stat 3
-				// node circle stat 4
-				// node circle stat 5
-				// color
-				];
     $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
 	$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
 	
@@ -159,7 +154,7 @@
         .attr("width", svgWidth)
         .attr("height", svgHeight);
     
-	seasonSVG.selectAll("circle")
+	seasonSVG.selectAll(".classname")
 		.data(teams)
 		.enter()
 		.append("svg:circle")
@@ -170,7 +165,16 @@
         .attr("r", 	function(d, i){	return d.r })
         .attr("cx", function(d, i){	return d.cX })
 		.attr("cy", function(d, i){	return d.cY });
+	seasonSVG
+		.append("circle")
+		.style("stroke", "blue")
+		.attr("r", 20)
+		.attr("cx", 500)
+		.attr("cy", 30);
         //.on("dblclick", function(){d3.select(this).style("fill", "black");})
+	
+	
+	
 	</script>
 </body>
 </html>

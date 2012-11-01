@@ -285,6 +285,10 @@
 			$('.teamCircle').fadeIn(1000, function() {
 				// Animation complete.
 			});
+			
+			$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 2; display:none;');
+		
+			teamSVG.selectAll(".playerCircle").remove();
 		}
 	</script>
 </body>

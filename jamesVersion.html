@@ -10,171 +10,313 @@
 	<div id="teamLevel"></div>
 	<div style="width:240px; height:25px; z-index:99;" id="teamName"></div>
 	<div style="width:240px; height:25px; z-index:99;" id="playerName"></div>
-    
-	<!--
-	
-	<div id="historyLevel"></div>
-	<div id="seasonLevel"></div>
-	<div id="teamLevel"></div>
-	
-	-->
+	<button id="backbtn" onClick="animateBack1()" style="position:absolute; left:100px; top:100px; display:none;">Back</button>
 
 
 	<script type="text/javascript">
-	var svgHeight = 700;
-	var svgWidth = 1000;
+		var svgHeight = 1400;
+		var svgWidth = 2000;
+		var teamX = 0;
+		var teamY = 0;
+		var teamR = 0;
+		var teamStroke = 0;
 	
-	var history = [{seasondate: 2012, cX: svgWidth/2, cY: svgHeight/2, r: 250},
-				{seasondate: 2011, cX: svgWidth/2, cY: svgHeight/2, r: 250},
-				{seasondate: 2010, cX: svgWidth/2, cY: svgHeight/2, r: 250},
-				{seasondate: 2009, cX: svgWidth/2, cY: svgHeight/2, r: 250},
-				{seasondate: 2008, cX: svgWidth/2, cY: svgHeight/2, r: 250}];
+		var history = [{seasondate: 2012, cX: svgWidth/2, cY: svgHeight/2, r: 500},
+					{seasondate: 2011, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2010, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2009, cX: svgWidth/2, cY: svgHeight/2, r: 250},
+					{seasondate: 2008, cX: svgWidth/2, cY: svgHeight/2, r: 250}];
 	
-	// includes per game stats of each player
-	// max values of each
-	// points: 36, assists: 15, rebounds: 18, blocks: 6, steals: 6, minutes 48
-	var players = [{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3},
-	            {playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1},
-	            {playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8}];
-	
-	var teams = [{teamname: "Lakers", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-	            {teamname: "Bulls", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-	            {teamname: "Heat", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-				{teamname: "Bobcats", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-				{teamname: "Hornets", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-				{teamname: "Thunder", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-				{teamname: "Mavericks", cX: 0, cY: 0, r: 60, strokeWidth: 3},
-				{teamname: "Celtics", cX: 0, cY: 0, r: 60, strokeWidth: 3}];
-				
-	var historyCircle = [// xPos,
-				// yPos,
-				// stroke-width,
-				// stroke,
-				// fill,
-				// arr seasons,
-					// xPos
-					// yPos
-					// stroke-width
-					// stroke color
-					// fill
-					];
-					
-	//var seasonCircle = [
-				// main circle
-					// xPos,
-					// yPos,
-					// stroke-width,
-					// stroke,
-					// fill,
-				// arr teamNodes,
-					// teamCircle
-						// xPos
-						// yPos
-						// stroke-width
-						// stroke color
-						// fill
-						// teamImage
-						// Top 5 stats
-					//];
-	
-	/*var teamCircle = new Object();
-	var main_X = 'main_X';
-	var main_Y = 'main_Y';
-	var main_strokeWidth = 'main_strokeWidth';
-	var main_strokeColor = 'main_strokeColor';
-	teamCircle[main_X] = 400;
-	teamCircle[main_Y] = 500;
-	teamCircle[main_strokeWidth] = 10;
-	teamCircle[main_strokeColor] = 'gray';*/
-	
-	/* This method figures out positions of each subcircle
-	   that's encircling the main circle. */
-	function encircle(mainCircle_r, mainCircle_cX, mainCircle_cY, array)
-	{
+		// includes per game stats of each player
+		// max values of each
+		// points: 36, assists: 15, rebounds: 18, blocks: 6, steals: 6, minutes 48
+		/*var players = [{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+					{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+					{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}];*/
 		
-		var radian = 0;
-		
-		for (var i = 0; i < array.length; i++)
-		{
-			radian = 2 * i * Math.PI/array.length - Math.PI/2;
-			array[i].cX = Math.round(mainCircle_r * Math.cos(radian) + mainCircle_cX);
-			array[i].cY = Math.round(mainCircle_r * Math.sin(radian) + mainCircle_cY);
-		}
-	}
-	
-	encircle(history[0].r, history[0].cX, history[0].cY, teams);
-	
-	function drawFiveStats(mainCircle_cX, mainCircle_cY, array)
-	{
-		encircle(40, mainCircle_cX, mainCircle_cY, array);
-	}
-	
-	function seasonCircle(cX, cY, strokeWidth, strokeColor, fillColor) {
-		this.cX = cX;
-		this.cY = cY;
-		this.strokeWidth = strokeWidth;
-		this.strokeColor = strokeColor;
-		this.fillColor = fillColor;
-	}
-	
-	function teamCircle(cX, cY, strokeWidth, strokeColor, fillColor) {
-		this.cX = cX;
-		this.cY = cY;
-		this.r = 50;
-		this.strokeWidth = strokeWidth;
-		this.strokeColor = strokeColor;
-		this.fillColor = fillColor;
-	}
-	
-	var teamCircles = [new teamCircle(300, 300, 1, 'gray', 'white')];
-	
-    $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
-	$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
-	
-	var historySVG = d3.select("#historyLevel")
-        .append("svg")
-        .attr("width", svgWidth)
-        .attr("height", svgHeight)
-		.append("circle")
-		.style("stroke", "gray")
-        .style("fill", "white")
-		.attr("class", "normalCircle")
-		.attr("r", 	history[0].r)
-        .attr("cx", history[0].cX)
-		.attr("cy", history[0].cY)
-		.attr("stroke-width", 20);
-	
-	var seasonSVG = d3.select("#seasonLevel")
-        .append("svg")
-        .attr("width", svgWidth)
-        .attr("height", svgHeight);
+		var teams = [{teamname: "Lakers", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Bulls", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Heat", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Bobcats", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Hornets", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Thunder", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Mavericks", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]},
+					{teamname: "Celtics", cX: 0, cY: 0, r: 60, strokeWidth: 3, players: [
+						{playername: "Bryant", points: 30, assists: 4.3, rebounds: 4.8, steals: 1.3, blocks: .3, cX: 0, cY: 0, r: 15, fill: "red"},
+						{playername: "Nash", points: 12.5, assists: 10.7, rebounds: 3, steals: .7, blocks: .1, cX: 0, cY: 0, r: 15, fill: "yellow"},
+						{playername: "Howard", points: 27, assists: .5, rebounds: 15.5, steals: .7, blocks: 1.8, cX: 0, cY: 0, r: 15, fill: "blue"}
+					]}];
 
-   	var teamSVG = d3.select("#teamLevel")
-        .append("svg")
-        .attr("width", svgWidth)
-        .attr("height", svgHeight);
+		function encircle(mainCircle_r, mainCircle_cX, mainCircle_cY, array)
+		{
+		
+			var radian = 0;
+		
+			for (var i = 0; i < array.length; i++)
+			{
+				radian = 2 * i * Math.PI/array.length - Math.PI/2;
+				array[i].cX = Math.round(mainCircle_r * Math.cos(radian) + mainCircle_cX);
+				array[i].cY = Math.round(mainCircle_r * Math.sin(radian) + mainCircle_cY);
+			}
+		}
+		
+		
+		// random function set up for the back btn
+		function allBlack()
+		{
+			seasonSVG.selectAll("circle").style("fill", "black");
+			seasonSVG.selectAll("circle").attr("data-black", 1);
+		}
+		
+		
+	
+	    $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		//$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		
+		encircle(history[0].r, history[0].cX, history[0].cY, teams);
+		
+		// changed class to team circle. might need to change to something consistent
+		var historySVG = d3.select("#historyLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight)
+			.append("circle")
+			.style("stroke", "gray")
+	        .style("fill", "white")
+			.attr("class", "seasonCircle")
+			.attr("r", 	history[0].r)
+	        .attr("cx", history[0].cX)
+			.attr("cy", history[0].cY)
+			.attr("stroke-width", 20);
+	
+		var seasonSVG = d3.select("#seasonLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight);
+
+	   	var teamSVG = d3.select("#teamLevel")
+	        .append("svg")
+	        .attr("width", svgWidth)
+	        .attr("height", svgHeight);
     
-	seasonSVG.selectAll(".classname")
-		.data(teams)
-		.enter()
-		.append("svg:circle")
-        .style("stroke", "gray")
-		.style("stroke-width", function(d, i){	return d.strokeWidth })
-        .style("fill", "white")
-		.attr("class", "normalCircle")
-        .attr("r", 	function(d, i){	return d.r })
-        .attr("cx", function(d, i){	return d.cX })
-		.attr("cy", function(d, i){	return d.cY });
-	seasonSVG
-		.append("circle")
-		.style("stroke", "blue")
-		.attr("r", 20)
-		.attr("cx", 500)
-		.attr("cy", 30);
-        //.on("dblclick", function(){d3.select(this).style("fill", "black");})
-	
-	
-	
+		
+		var temp = teams.length;
+		/*
+		seasonSVG.selectAll("circle")
+			.data(teams)
+			.enter()
+			.append("svg:circle")
+	        .style("stroke", "gray")
+			.style("stroke-width", function(d, i){	return d.strokeWidth })
+	        .style("fill", "white")
+			.attr("data-black", 0)
+			.attr("data-team", function(d, i){	return d.teamname })
+			.attr("class", "teamCircle")
+	        .attr("r", 	function(d, i){	return d.r })
+	        .attr("cx", function(d, i){	return d.cX })
+			.attr("cy", function(d, i){	return d.cY })
+			.on("click", animateFirstStep);
+			*/
+		
+		var teamGroups = seasonSVG.selectAll("g.teams")
+			.data(teams)
+			.enter()
+			.append("g")
+			.attr("class", "teams");
+			
+		teamGroups.append("svg:circle")
+	        .style("stroke", "gray")
+			.style("stroke-width", function(d){	return d.strokeWidth })
+	        .style("fill", "white")
+			.attr("data-black", 0)
+			.attr("data-team", function(d){	return d.teamname })
+			.attr("class", "teamCircle")
+	        .attr("r", 	function(d){	return d.r })
+	        .attr("cx", function(d){	return d.cX })
+			.attr("cy", function(d){	return d.cY });
+
+		for (var i = 0; i < teams.length; i++) {
+			encircle(teams[i].r, teams[i].cX, teams[i].cY, teams[i].players);
+		}
+		
+		/*teamGroups.each(function(p, j) {
+				d3.select(this).selectAll(".playerCircle")
+				.data(p.players)
+				.enter().append("circle")
+				.attr("r", 3.5)
+				.style("fill", color(p.name));
+			});*/
+		
+		teamGroups.selectAll(".playerCircle")
+			.data(function(d) { return d.players; } )
+			.enter()
+			.append("svg:circle")
+			.style("stroke", "gray")
+			.style("stroke-width", 2)
+			.style("fill", function(){	return "white"; })
+			.attr("data-black", 0)
+			//.attr("data-team", function(d) { return d.teamname; })
+			.attr("class", "playerCircle")
+			.attr("r", 	function(d){	return d.r; }) // d.players[i].r
+			.attr("cx", function(d){	return d.cX; })	//d.players[i].cY
+			.attr("cy", function(d){	return d.cY; }); // d.players[i].cX
+		
+		function animateFirstStep(){
+		    // removing team name from screen
+			//d3.select("#teamName").html("");
+			
+			$("#backbtn").attr("style", "position:absolute; left:100px; top:100px; display:visible;");
+			
+			teamX = this.getAttribute("cx");
+			teamY = this.getAttribute("cy");
+			teamR = this.getAttribute("r");
+			teamStroke = this.getAttribute("stroke-width");
+			
+			console.log("Team X: " + teamX);
+			console.log("Team Y: " + teamY);
+			console.log("Team R: " + teamR);
+			
+			d3.select(this)
+			  .attr("class", "abnormalCircle")
+		      .transition()            
+		        .delay(0)            
+		        .duration(700)
+		        .attr("cx", svgWidth/2)
+				.attr("cy", svgHeight/2)
+		        .each("end", animateSecondStep);
+		};
+		
+		function animateSecondStep(){
+			$('.teamCircle').fadeOut(1000, function() {
+				// Animation complete.
+			});
+
+
+			d3.select(this)
+		      .transition()
+		        .duration(700)
+		        .attr("r", 250)
+				.attr("stroke-width", 20)
+				.each("end", animateLastStep);
+		};
+		
+		
+		function animateLastStep(){
+			//$('#secondLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 2; display:none');
+			$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 2; display:none;');
+			
+			
+			// this describes players' circle properties and stuff
+		    teamSVG.selectAll("circle")
+				.data(players)
+				.enter()
+				.append("svg:circle")
+				.style("stroke", "gray")
+				.style("stroke-width", "3")
+		        .style("fill", "white")
+				.attr("class", "playerCircle")
+				.attr("cx", function(d, i){	if(i==0)
+												return svgWidth*.5;
+											else if (i==1)
+												return svgWidth*.35;
+											else
+												return svgWidth*.65;})
+				.attr("cy", function(d, i){	if(i==0)
+												return svgHeight*.15;
+											else
+												return svgHeight*.75;})
+				//changed maxRadius to hard coded 60
+				.attr("r", 	function(d, i){	return d.overall/100*60})
+				/*.on("click", function(){ $('#firstLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 1; visibility:hidden;'); })
+				.on("dblclick", function(){ $('#firstLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 1;'); });
+				.on("mouseover", function(d){ d3.select("#playerName")
+												.style("position", "absolute")
+												.style("top", mouseY-20+"px")
+												.style("left", mouseX+10+"px")
+												.html("Player: " + d.playername + "</br>Overall: " + d.overall)
+												.style("color", "black");})
+				.on("mouseout", function(d){ d3.select("#playerName")
+												.html("") })*/
+				//function(){d3.select(this).style("fill", "aliceblue");})
+
+				$('#teamLevel').fadeIn(1000, function() {
+					// Animation complete.
+				});
+		};
+		
+		
+		
+		function animateBack1(){
+			$('.playerCircle').fadeOut(1000, function() {
+				// Animation complete.
+			});
+			
+			/*
+			$('.teamCircle').fadeIn(1000, function() {
+				// Animation complete.
+			}); */
+
+
+			d3.select(".abnormalCircle")
+		      .transition()
+		        .duration(700)
+		        .attr("r", teamR)
+				.attr("stroke-width", teamStroke)
+				.each("end", animateBack2);
+		}
+		
+		function animateBack2(){
+			$("#backbtn").attr("style", "position:absolute; left:100px; top:100px; display:none;");
+			
+			d3.select(".abnormalCircle")
+			  .attr("class", "teamCircle")
+		      .transition()            
+		        .delay(0)            
+		        .duration(700)
+		        .attr("cx", teamX)
+				.attr("cy", teamY)
+		        .each("end", animateBack3);
+		}
+		
+			
+		function animateBack3() {	
+			$('.teamCircle').fadeIn(1000, function() {
+				// Animation complete.
+			});
+			
+			$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 2; display:none;');
+		
+			teamSVG.selectAll(".playerCircle").remove();
+		}
 	</script>
 </body>
 </html>

@@ -278,14 +278,6 @@
 			.attr("cx", function(d){	return d.cX; })
 			.attr("cy", function(d){	return d.cY; });
 		
-		/*teamGroups.each(function(p, j) {
-				d3.select(this).selectAll(".playerCircle")
-				.data(p.players)
-				.enter().append("circle")
-				.attr("r", 3.5)
-				.style("fill", color(p.name));
-			});*/
-		
 		teamGroups.selectAll(".playerCircle")
 			.data(function(d) { return d.players; } )
 			.enter()

@@ -31,7 +31,11 @@
 		var teamCircleR = 60;
 
 		var seasonYear = 2012;
+		var yearIndex = 0;
 		var teamIndex = 0;
+
+		var useStats = new Array();
+		var playerNames = new Array();
 		
 		var alldata = {
 			"overview" : [
@@ -15340,11 +15344,6 @@
 						]
 					};
 		
-		
-		
-		
-		
-		
 		/*
 		{
 			"overview" : [
@@ -15465,9 +15464,9 @@
 		// beginning transition from history level to season level
 		function disappearYear() {
 			
-			// getting the team index so that we can access correct data in JSON
-			teamIndex = seasonYear - d3.select(this).select(".yearCircle").attr("data-year");
-			console.log("Team Index: " + teamIndex);
+			// getting the year index so that we can access correct data in JSON
+			yearIndex = seasonYear - d3.select(this).select(".yearCircle").attr("data-year");
+			console.log("Year Index: " + yearIndex);
 
 
 			
@@ -15494,7 +15493,6 @@
 			        .duration(700)
 			        .style("stroke-width", 20)
 			        .attr("r", 250)
-					.attr("stroke-width", 1)
 					.each("end", startSeason);
 					
 			}
@@ -15504,24 +15502,25 @@
 
 		function startSeason() {
 			console.log("Start Season");
-			console.log(data[teamIndex].teams[0]);
+			console.log(data[yearIndex].teams[0]);
 			
 			// need to change the value of arrayLength because there are more teams than seasons
-			arrayLength = data[teamIndex].teams.length;
+			arrayLength = data[yearIndex].teams.length;
 			
 			var seasonTeams = seasonSVG.selectAll("g.teams")
-				.data(data[teamIndex].teams)
+				.data(data[yearIndex].teams)
 				.enter()
 				.append("g")
 				.attr("class", "teams")
-				.attr("data-team", function(d){	return d["name"]; });
-				//.on("click", testAnimate);
+				.attr("data-team", function(d){	return d["name"]; })
+				.on("click", disappearTeam);
 			
 			seasonTeams.append("svg:circle")
 		        .style("stroke", "gray")
 				.style("stroke-width", 3)
 		        .style("fill", "white")
 				.attr("class", "teamCircle")
+				.attr("data-teamnumber", function(d,i) { return i; })
 		        .attr("r", 	teamCircleR)
 		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
 											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
@@ -15529,85 +15528,182 @@
 											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); });
 				
 			
+			
+
+
+			// need to create array for stats so D3 can easily iterate through using .enter
+			useStats[0] = [ [data[yearIndex].teams[0].big3ppg,0,0,0,0], [data[yearIndex].teams[0].big3assists,0,0,0,0], [data[yearIndex].teams[0].big3rebounds,0,0,0,0], [data[yearIndex].teams[0].big3steals,0,0,0,0], [data[yearIndex].teams[0].big3blocks,0,0,0,0] ];
+			useStats[1] = [ [data[yearIndex].teams[1].big3ppg,0,0,0,1], [data[yearIndex].teams[1].big3assists,0,0,0,1], [data[yearIndex].teams[1].big3rebounds,0,0,0,1], [data[yearIndex].teams[1].big3steals,0,0,0,1], [data[yearIndex].teams[1].big3blocks,0,0,0,1] ];
+			useStats[2] = [ [data[yearIndex].teams[2].big3ppg,0,0,0,2], [data[yearIndex].teams[2].big3assists,0,0,0,2], [data[yearIndex].teams[2].big3rebounds,0,0,0,2], [data[yearIndex].teams[2].big3steals,0,0,0,2], [data[yearIndex].teams[2].big3blocks,0,0,0,2] ];
+			useStats[3] = [ [data[yearIndex].teams[3].big3ppg,0,0,0,3], [data[yearIndex].teams[3].big3assists,0,0,0,3], [data[yearIndex].teams[3].big3rebounds,0,0,0,3], [data[yearIndex].teams[3].big3steals,0,0,0,3], [data[yearIndex].teams[3].big3blocks,0,0,0,3] ];
+			useStats[4] = [ [data[yearIndex].teams[4].big3ppg,0,0,0,4], [data[yearIndex].teams[4].big3assists,0,0,0,4], [data[yearIndex].teams[4].big3rebounds,0,0,0,4], [data[yearIndex].teams[4].big3steals,0,0,0,4], [data[yearIndex].teams[4].big3blocks,0,0,0,4] ];
+			useStats[5] = [ [data[yearIndex].teams[5].big3ppg,0,0,0,5], [data[yearIndex].teams[5].big3assists,0,0,0,5], [data[yearIndex].teams[5].big3rebounds,0,0,0,5], [data[yearIndex].teams[5].big3steals,0,0,0,5], [data[yearIndex].teams[5].big3blocks,0,0,0,5] ];
+			useStats[6] = [ [data[yearIndex].teams[6].big3ppg,0,0,0,6], [data[yearIndex].teams[6].big3assists,0,0,0,6], [data[yearIndex].teams[6].big3rebounds,0,0,0,6], [data[yearIndex].teams[6].big3steals,0,0,0,6], [data[yearIndex].teams[6].big3blocks,0,0,0,6] ];
+			useStats[7] = [ [data[yearIndex].teams[7].big3ppg,0,0,0,7], [data[yearIndex].teams[7].big3assists,0,0,0,7], [data[yearIndex].teams[7].big3rebounds,0,0,0,7], [data[yearIndex].teams[7].big3steals,0,0,0,7], [data[yearIndex].teams[7].big3blocks,0,0,0,7] ];
+
+			console.log(useStats);
+
+
+			for (var i = 0; i < useStats.length; i++) {
+				playerNames[i] = [ [data[yearIndex].teams[i].players[0], i], [data[yearIndex].teams[i].players[1], i], [data[yearIndex].teams[i].players[2], i] ] ;
+			}
+
+			console.log("Players Chosen");
+			console.log(playerNames);
+
+
 			// NOTE: recalculating radian in this section may not be necessary
-			var tempCX = new Array();
-			var tempCY = new Array();
+			var tempCX = 0;
+			var tempCY = 0;
+			var tempR = 0;
 			seasonTeams.append("svg:circle")
 				.style("stroke", "gray")
 				.style("stroke-width", 1)
 				.style("fill", function(){	return "white"; })
 				.attr("data-black", 0)
 				.attr("class", "avgstatsCircle")
-				.attr("r", 	30)
-				.attr("cx", function(d,i){	tempI = i;
-											radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											tempCX[i] = Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
-											//console.log("CX: " + tempCX[0]);
-											return  Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
+				.attr("r", 	function(d,i){	tempR = 30;
+											useStats[i][0][1] = tempR;
+											return tempR; })
+				.attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											tempCX = Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
+											useStats[i][0][2] = tempCX;
+											return  tempCX; })
 				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											tempCY[i] = Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);
-											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); });
-				
+											tempCY = Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);
+											useStats[i][0][3] = tempCY;
+											return tempCY; });
 			
-
-			// need to create array for stats so D3 can easily iterate through using .enter
-			var useStats = new Array();
-			useStats[0] = [data[teamIndex].teams[0].big3ppg, data[teamIndex].teams[0].big3assists, data[teamIndex].teams[0].big3rebounds, data[teamIndex].teams[0].big3steals, data[teamIndex].teams[0].big3blocks];
-			useStats[1] = [data[teamIndex].teams[1].big3ppg, data[teamIndex].teams[1].big3assists, data[teamIndex].teams[1].big3rebounds, data[teamIndex].teams[1].big3steals, data[teamIndex].teams[1].big3blocks];
-			useStats[2] = [data[teamIndex].teams[2].big3ppg, data[teamIndex].teams[2].big3assists, data[teamIndex].teams[2].big3rebounds, data[teamIndex].teams[2].big3steals, data[teamIndex].teams[2].big3blocks];
-			useStats[3] = [data[teamIndex].teams[3].big3ppg, data[teamIndex].teams[3].big3assists, data[teamIndex].teams[3].big3rebounds, data[teamIndex].teams[3].big3steals, data[teamIndex].teams[3].big3blocks];
-			useStats[4] = [data[teamIndex].teams[4].big3ppg, data[teamIndex].teams[4].big3assists, data[teamIndex].teams[4].big3rebounds, data[teamIndex].teams[4].big3steals, data[teamIndex].teams[4].big3blocks];
-			useStats[5] = [data[teamIndex].teams[5].big3ppg, data[teamIndex].teams[5].big3assists, data[teamIndex].teams[5].big3rebounds, data[teamIndex].teams[5].big3steals, data[teamIndex].teams[5].big3blocks];
-			useStats[6] = [data[teamIndex].teams[6].big3ppg, data[teamIndex].teams[6].big3assists, data[teamIndex].teams[6].big3rebounds, data[teamIndex].teams[6].big3steals, data[teamIndex].teams[6].big3blocks];
-			useStats[7] = [data[teamIndex].teams[7].big3ppg, data[teamIndex].teams[7].big3assists, data[teamIndex].teams[7].big3rebounds, data[teamIndex].teams[7].big3steals, data[teamIndex].teams[7].big3blocks];
 
 			console.log(useStats);
 
+
+
+
+
 			
 			arrayLength = useStats[0].length;
+			console.log("Array Length: " + arrayLength);
 			var tempI = 0;
 			seasonTeams.selectAll(".avgstat")
-				.data(function(d,i){ 	tempI = i;
-										console.log(tempI);
-										console.log(useStats[i]);
-										return useStats[tempI]; })
+				.data(function(d,i) {	return useStats[i]; })
 				.enter()
 				.append("svg:circle")
 				.style("stroke", "gray")
 				.style("fill", "gray")
 				.attr("class", "avgstat")
-				.attr("r", 	function(d,i){	return 3; })
-				.attr("cx", function(d,i){	console.log(tempI);
-											//console.log("current i: " + tempI);
-											//radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											//return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
-											return tempCX[tempI]; })
+				.attr("r", 	function(d,i) {	var val = 0;
+											switch(i)
+											{
+											// ppg
+											case 0:
+												val = d[0] * .6;
+												break;
+											// assists
+											case 1:
+												val = d[0] * 2;
+												break;
+											// rebounds
+											case 2:
+												val = d[0] * 1.3;
+												break;
+											// steals
+											case 3:
+												val = d[0] * 1.2;
+												break;
+											// blocks
+											case 4:
+												val = d[0] * 1.1;
+												break;
+											}
+											return val; })
+				.attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(useStats[d[4]][0][1] * Math.cos(radian) + useStats[d[4]][0][2]); })
 				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											//console.log("current i: " + tempI);
-											//tempI++;
-											//return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); 
-											return tempCY[tempI]; });
+											return Math.round(useStats[d[4]][0][1] * Math.sin(radian) + useStats[d[4]][0][3]); });
 			
-
-			console.log(tempCX);
-			console.log(tempCY);
-			/*
-			teamGroups.selectAll(".playerCircle")
-				.data(function(d) { return d.players; } )
+			
+			arrayLength = playerNames[0].length;
+			seasonTeams.selectAll(".playerCircle")
+				.data(function(d,i) {	return playerNames[i]; })
 				.enter()
 				.append("svg:circle")
 				.style("stroke", "gray")
 				.style("stroke-width", 2)
 				.style("fill", function(){	return "white"; })
-				.attr("data-black", 0)
 				.attr("class", "playerCircle")
-				.attr("r", 	function(d){	return d.r; })
-				.attr("cx", function(d){	return d.cX; })
-				.attr("cy", function(d){	return d.cY; });*/
+				.attr("r", 	15)
+				.attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(60 * Math.cos(radian) + useStats[d[1]][0][2]); })
+				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(60 * Math.sin(radian) + useStats[d[1]][0][3]); });
 
 
-				// making the next level (div) visible
+			// making the next level (div) visible
 			$('#seasonLevel').fadeIn(500);
+		}
+
+		function disappearTeam() {
+			// getting the team index so that we can access correct data in JSON
+			teamIndex = d3.select(this).select(".teamCircle").attr("data-teamnumber");
+			console.log("Team Index: " + teamIndex);
+
+
+			// changing class of selected yr circle to distinguish it and moving it to center
+			d3.select(this).select(".teamCircle")
+				.attr("class", "abnormalTeamCircle")
+		    	.transition()
+		        	.delay(0)
+			        .duration(500)
+			        .attr("cx", svgWidth/2)
+					.attr("cy", svgHeight/2)
+					.each("end", disappearTeam2);
+			
+
+			function disappearTeam2() {
+				$('.abnormalYearCircle').fadeOut(700);
+				$('.teamCircle').fadeOut(700);
+				$('.avgstatsCircle').fadeOut(700);
+				$('.avgstat').fadeOut(700);
+				$('.playerCircle').fadeOut(700);
+
+				// enlarge season circle and start adding season details by calling startSeason function
+				d3.select(this)
+			      .transition()
+			        .duration(700)
+			        .style("stroke-width", 20)
+			        .attr("r", 250)
+					.each("end", startTeam);
+					
+			}
+		}
+
+		function startTeam() {
+			console.log("Start Team");
+			
+			// need to change the value of arrayLength
+			arrayLength = playerNames[0].length;
+			
+			var teamPlayers = teamSVG.selectAll("g.playas")
+				.data(playerNames[teamIndex])
+				.enter()
+				.append("g")
+				.attr("class", "playas")
+				.on("click", disappearTeam);
+			
+			teamPlayers.append("svg:circle")
+		        .style("stroke", "gray")
+				.style("stroke-width", 3)
+		        .style("fill", "white")
+				.attr("class", "playa")
+		        .attr("r", 	80)
+		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
+				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); });
+
+			// making the next level (div) visible
+			$('#teamLevel').fadeIn(500);
 		}
 	</script>
 

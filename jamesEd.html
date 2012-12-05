@@ -185,7 +185,7 @@
 		
 	
 	    $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
-		$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 2;');
 		//$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
 		
 		encircle(history[0].r, history[0].cX, history[0].cY, teams);
@@ -200,14 +200,14 @@
         defs.append('svg:pattern')
             .attr('id', 'heatpic')
             .attr('patternUnits', 'userSpaceOnUse')
-            .attr('width', '300')
-            .attr('height', '300')
+            .attr('width', '50')
+            .attr('height', '50')
             .append('svg:image')
             .attr('xlink:href', 'Miami_Heat.jpg')
             .attr('x', 0)
             .attr('y', 0)
-            .attr('width', 300)
-            .attr('height', 300);
+            .attr('width', 50)
+            .attr('height', 50);
 		
 		
 			
@@ -412,7 +412,7 @@
 		
 		function animateLastStep(){
 			//$('#secondLevel').attr('style', 'position:absolute; width:'+width+'px; height:'+height+'px; z-index: 2; display:none');
-			$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 2; display:none;');
+			$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 4; display:none;');
 			
 			
 			// this describes players' circle properties and stuff

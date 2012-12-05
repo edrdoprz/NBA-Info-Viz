@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="d3.v2.js"></script>
+	<script type="text/javascript" src="jquery-1.8.3.js"></script>
 </head>
 <body>
 	<div id="historyLevel"></div>
 	<div id="yearLevel"></div>
 	<div id="seasonLevel"></div>
 	<div id="teamLevel"></div>
-	<div style="width:240px; height:25px; z-index:99;" id="teamName"></div>
-	<div style="width:240px; height:25px; z-index:99;" id="playerName"></div>
-	<button id="backbtn1" onClick="backToHistory()" style="position:absolute; left:100px; top:100px; display:none;">Back</button>
+	<div style="width:240px; height:25px; z-index:98;" id="teamName"></div>
+	<div style="width:240px; height:25px; z-index:98;" id="playerName"></div>
+	<button id="backbtn1" onClick="backToHistory()" style="position:absolute; left:100px; top:100px; display:none; z-index:99;">Back</button>
 
-	<button id="backbtn2" onClick="backToSeason()" style="position:absolute; left:100px; top:100px; display:none;">Back</button>
+	<button id="backbtn2" onClick="backToSeason()" style="position:absolute; left:100px; top:100px; display:none; z-index:99;">Back</button>
 
 	
+	<div style="position:absolute; top:500px; left:900px; width:150px; height:150px; z-index:98; border:solid 3px gray; padding:5px; word-wrap:break-word;" id="playerInfo1">
+		Empty
+
+	</div>
+	<div style="position:absolute; top:500px; left:1070px; width:150px; height:150px; z-index:98; border:solid 3px gray; padding:5px; word-wrap:break-word;" id="playerInfo2">
+		Empty
+	</div>
+
+	<div style="position:absolute; top:360px; left:400px; width:300px; height:50px; z-index:98; word-wrap:break-word; text-align:center; display:none;" id="context">
+		
+	</div>
+
+	<button id="clearText" onClick="clearPlayerText()" style="position:absolute; left:900px; top:460px; z-index:99;">Clear</button>
 	
 	<script type="text/javascript">
-		var svgHeight = 700;
+		
+		/////// original height was 700
+		var svgHeight = 800;
 		var svgWidth = 1000;
 		var yearX = 0;
 		var yearY = 0;
@@ -42,6 +57,12 @@
 
 		var useStats = new Array();
 		var playerNames = new Array();
+		var bottomstats = new Array();
+
+		var playerPicked1 = 0;
+
+		var contextYear = 0;
+		var contextTeamName = "";
 		
 		var alldata = {
 			"overview" : [
@@ -15386,10 +15407,18 @@
 		console.log(alldata.overview);
 		console.log(alldata["overview"].length);
 		
-		$('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
-		$('#yearLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
-		$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
-		$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+
+		console.log("ScreenWidth");
+		console.log(screen.width/2-svgWidth/2);
+		// $('#historyLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		// $('#yearLevel').attr('style', 'position:absolute; left:'+(screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		// $('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+		// $('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+
+		$('#historyLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		$('#yearLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1;');
+		$('#seasonLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+		$('#teamLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
 
 		
 		
@@ -15472,7 +15501,7 @@
 		function disappearYear() {
 			
 
-			$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:visible;");
+			$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:visible; z-index:99;");
 
 			console.log("This:");
 			console.log(d3.select(this).select(".yearCircle")[0][0].getAttribute("cx"));
@@ -15489,7 +15518,8 @@
 
 
 			// getting the year index so that we can access correct data in JSON
-			yearIndex = seasonYear - d3.select(this).select(".yearCircle").attr("data-year");
+			contextYear = d3.select(this).select(".yearCircle").attr("data-year");
+			yearIndex = seasonYear - contextYear;
 			console.log("Year Index: " + yearIndex);
 
 
@@ -15654,7 +15684,14 @@
 				.append("svg:circle")
 				.style("stroke", "gray")
 				.style("stroke-width", 2)
-				.style("fill", function(){	return "white"; })
+				.style("fill", function(d,i){	if (d[0]["position"] == "F")
+													return "DarkCyan"; 
+												else if (d[0]["position"] == "G")
+													return "BlueViolet";
+												else if (d[0]["position"] == "C")
+													return "DarkGoldenRod";
+												else
+													return "White"; })
 				.attr("class", "playerCircle")
 				.attr("r", 	15)
 				.attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
@@ -15663,13 +15700,16 @@
 											return Math.round(60 * Math.sin(radian) + useStats[d[1]][0][3]); });
 
 
-			// making the next level (div) visible
+			// making the next level (div) visible, and context
+			$('#context').html("<h1>"+contextYear+"</h1>");
 			$('#seasonLevel').fadeIn(500);
+			$('#context').fadeIn(500);
 		}
 
 		function disappearSeason() {
 			// getting the team index so that we can access correct data in JSON
 			teamIndex = d3.select(this).select(".teamCircle").attr("data-teamnumber");
+			contextTeamName = d3.select(this).attr("data-team");
 			console.log("Team Index: " + teamIndex);
 
 
@@ -15696,6 +15736,7 @@
 				$('.avgstatsCircle').fadeOut(700);
 				$('.avgstat').fadeOut(700);
 				$('.playerCircle').fadeOut(700);
+				$('#context').fadeOut(500);
 
 				// enlarge season circle and start adding season details by calling startSeason function
 				d3.select(this)
@@ -15719,28 +15760,164 @@
 				.enter()
 				.append("g")
 				.attr("class", "playas");
-				//.on("click", );
+				//.on("click", function(){ console.log("click!!")})
+				//.on("dblclick", function(){ console.log("dblclick!!")});
 			
+
+			function singleClick(e) {
+			    // do something, "this" will be the DOM element
+			    console.log("singleClick");
+			    console.log(this);
+			}
+
+			function doubleClick(e) {
+			    // do something, "this" will be the DOM element
+			    console.log("doubleclick");
+			    console.log(d3.select(this).select(".playa")[0][0].getAttribute("data-whichplayer"));
+			    var tmp = d3.select(this).select(".playa")[0][0].getAttribute("data-whichplayer");
+			    var tmpPlayer = playerNames[teamIndex][tmp];
+			    console.log(tmpPlayer);
+			    if (playerPicked1 == 0) {
+			    	playerPicked1 = 1;
+			    	d3.select("#playerInfo1").html(
+			    		"<b>Name:</b> " + tmpPlayer[0]["name"] + "</br>" +
+			    		"<b>Points:</b> " + tmpPlayer[0]["ppg"] + "</br>" +
+			    		"<b>Assists:</b> " + tmpPlayer[0]["assists"] + "</br>" +
+			    		"<b>Rebounds:</b> " + tmpPlayer[0]["rebounds"] + "</br>" +
+			    		"<b>Steals:</b> " + tmpPlayer[0]["steals"] + "</br>" +
+			    		"<b>Blocks:</b> " + tmpPlayer[0]["blocks"]);
+			    }
+			    else {
+			    	playerPicked1 = 0;
+			    	d3.select("#playerInfo2").html(
+			    		"<b>Name:</b> " + tmpPlayer[0]["name"] + "</br>" +
+			    		"<b>Points:</b> " + tmpPlayer[0]["ppg"] + "</br>" +
+			    		"<b>Assists:</b> " + tmpPlayer[0]["assists"] + "</br>" +
+			    		"<b>Rebounds:</b> " + tmpPlayer[0]["rebounds"] + "</br>" +
+			    		"<b>Steals:</b> " + tmpPlayer[0]["steals"] + "</br>" +
+			    		"<b>Blocks:</b> " + tmpPlayer[0]["blocks"]);
+
+			    }
+			}
+
+			$(".playas").click(function(e) {
+			    var that = this;
+			    setTimeout(function() {
+			        var dblclick = parseInt($(that).data('double'), 10);
+			        if (dblclick > 0) {
+			            $(that).data('double', dblclick-1);
+			        } else {
+			            singleClick.call(that, e);
+			        }
+			    }, 250);
+			}).dblclick(function(e) {
+			    $(this).data('double', 2);
+			    doubleClick.call(this, e);
+			});
+
+
+
+
+
+			// putting all the data for three players for last level
+			for (var i = 0; i < playerNames[teamIndex].length; i++) {
+				bottomstats[i] = [ [playerNames[teamIndex][i][0]["ppg"],0,0,i], [playerNames[teamIndex][i][0]["assists"],0,0,i], [playerNames[teamIndex][i][0]["rebounds"],0,0,i], [playerNames[teamIndex][i][0]["steals"],0,0,i], [playerNames[teamIndex][i][0]["blocks"],0,0,i] ];
+			}
+
+			console.log("Bottom Stats");
+			console.log(bottomstats);
+
+
+
+
 			teamPlayers.append("svg:circle")
 		        .style("stroke", "gray")
 				.style("stroke-width", 3)
-		        .style("fill", "white")
+		        .style("fill", function(d,i){	if (d[0]["position"] == "F")
+													return "DarkCyan"; 
+												else if (d[0]["position"] == "G")
+													return "BlueViolet";
+												else if (d[0]["position"] == "C")
+													return "DarkGoldenRod";
+												else
+													return "White"; })
 				.attr("class", "playa")
+				.attr("data-whichplayer", function(d,i){ return i; })
 		        .attr("r", 	80)
 		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
+											tempCX = Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
+											bottomstats[i][0][1] = tempCX;
+											return tempCX; })
 				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); });
+											tempCY = Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);;
+											bottomstats[i][0][2] = tempCY;
+											return tempCY; });
+
+			
+
+			
+
+
+
+
+			// 5 because we are drawing the 5 stats here
+			arrayLength = 5;
+			teamPlayers.selectAll(".bottomstats")
+				.data(function(d,i) {	console.log(bottomstats[i]);
+										return bottomstats[i]; })
+				.enter()
+				.append("svg:circle")
+				.style("stroke", "black")
+				.style("stroke-width", 2)
+				.style("fill", "black")
+				.attr("class", "playastat")
+				.attr("r", 	function(d,i) {	var val = 0;
+
+											switch(i)
+											{
+											// ppg
+											case 0:
+												val = d[0] * .6;
+												break;
+											// assists
+											case 1:
+												val = d[0] * 2;
+												break;
+											// rebounds
+											case 2:
+												val = d[0] * 1.3;
+												break;
+											// steals
+											case 3:
+												val = d[0] * 1.2;
+												break;
+											// blocks
+											case 4:
+												val = d[0] * 1.1;
+												break;
+											}
+											return val; })
+				.attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(80 * Math.cos(radian) + bottomstats[d[3]][0][1]); })
+				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(80 * Math.sin(radian) + bottomstats[d[3]][0][2]); });
+
+
+
+
 
 			// making the next level (div) visible
+			$('#context').html("<h2>"+contextYear+"</br>"+ contextTeamName+"</h2>");
+			$('#context').fadeIn(500);
 			$('#teamLevel').fadeIn(500);
-			$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:none;");
-			$("#backbtn2").attr("style", "position:absolute; left:100px; top:100px; display:visible;");
+			$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:none; z-index:99;");
+			$("#backbtn2").attr("style", "position:absolute; left:100px; top:100px; display:visible; z-index:99;");
 		}
 
 
 		function backToHistory(){
 			$('.teams').fadeOut(1000);
+			$('#context').fadeOut(1000);
 
 
 			d3.select(".abnormalYearCircle")
@@ -15752,7 +15929,7 @@
 
 
 			function backToHistory2() {
-				$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:none;");
+				$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:none; z-index:99;");
 					
 				d3.select(".abnormalYearCircle")
 				  .attr("class", "yearCircle")
@@ -15771,7 +15948,7 @@
 				$('.yearCircle').fadeIn(700);
 				
 				// making season level invisible so we can click on stuff in first level again
-				$('#seasonLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+				$('#seasonLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
 			
 				seasonSVG.selectAll(".teams").remove();
 			}
@@ -15779,6 +15956,7 @@
 
 		function backToSeason(){
 			$('.playas').fadeOut(1000);
+			$('#context').fadeOut(1000);
 
 
 			d3.select(".abnormalTeamCircle")
@@ -15790,8 +15968,8 @@
 
 
 			function backToSeason2() {
-				$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:visible;");
-				$("#backbtn2").attr("style", "position:absolute; left:100px; top:100px; display:none;");
+				$("#backbtn1").attr("style", "position:absolute; left:100px; top:100px; display:visible; z-index:99;");
+				$("#backbtn2").attr("style", "position:absolute; left:100px; top:100px; display:none; z-index:99;");
 
 				d3.select(".abnormalTeamCircle")
 				  .attr("class", "teamCircle")
@@ -15800,24 +15978,32 @@
 			        .duration(700)
 			        .attr("cx", teamX)
 					.attr("cy", teamY)
-					.attr("stroke-width", 3)
+					.style("stroke-width", 3)
 			        .each("end", backToSeason3);
 			}
 
 			function backToSeason3() {
+				$('#context').html("<h1>"+contextYear+"</h1>");
 				$('.abnormalYearCircle').fadeIn(700);
 				$('.teamCircle').fadeIn(700);
 				$('.avgstat').fadeIn(700);
 				$('.avgstatsCircle').fadeIn(700);
 				$('.playerCircle').fadeIn(700);
+				$('#context').fadeIn(500);
 				
 				// making season level invisible so we can click on stuff in first level again
-				$('#teamLevel').attr('style', 'position:absolute; left:'+ (screen.width/2-svgWidth/2)+'px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
+				$('#teamLevel').attr('style', 'position:absolute; left:50px; width:'+svgWidth+'px; height:'+svgHeight+'px; z-index: 1; display:none;');
 			
 				teamSVG.selectAll(".playas").remove();
 			}
 		}
 
+		function clearPlayerText() {
+			$('#playerInfo1').html("Empty");
+			$('#playerInfo2').html("Empty");
+
+			playerPicked1 = 0;
+		}
 	</script>
 
 </body>

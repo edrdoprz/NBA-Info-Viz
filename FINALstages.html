@@ -15816,9 +15816,14 @@
 				.data(playerNames[teamIndex])
 				.enter()
 				.append("g")
-				.attr("class", "playas");
-				//.on("click", function(){ console.log("click!!")})
-				//.on("dblclick", function(){ console.log("dblclick!!")});
+				.attr("class", "playas")
+				.on("mouseover", function(d,i){ $('#context').html(""+d[0]["name"]+"</br>Points: "+
+																	  d[0]["ppg"]+"</br>Assists: "+
+																	  d[0]["assists"]+"</br>Rebounds: "+
+																	  d[0]["rebounds"]+"</br>Steals: "+
+																	  d[0]["steals"]+"</br>Blocks: "+
+																	  d[0]["blocks"]); })
+				.on("mouseout", function(d,i){ $('#context').html("<h1>"+contextYear+"</br>"+contextTeamName+"</h1>"); });
 			
 
 			function singleClick(e) {
@@ -15924,9 +15929,9 @@
 										return bottomstats[i]; })
 				.enter()
 				.append("svg:circle")
-				.style("stroke", "black")
+				.style("stroke", "LightSlateGray")
 				.style("stroke-width", 2)
-				.style("fill", "black")
+				.style("fill", "LightSlateGray")
 				.attr("class", "playastat")
 				.attr("r", 	function(d,i) {	var val = 0;
 
@@ -15958,6 +15963,34 @@
 											return Math.round(80 * Math.cos(radian) + bottomstats[d[3]][0][1]); })
 				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
 											return Math.round(80 * Math.sin(radian) + bottomstats[d[3]][0][2]); });
+
+
+			teamPlayers.append("svg:text")
+				.text(function(d,i){ return d[0]["name"]; })
+				.attr("class", "teamplayerText")
+				.attr("text-anchor", function(d,i){	if (i==0)
+		        										return "middle"; 
+		        									else if (i==1)
+		        										return "start";
+		        									else
+		        										return "end";
+		        							})
+		        .attr("x", function(d,i){	if (i==0)
+        										return d3.selectAll(".playa")[0][i].getAttribute("cx"); 
+        									else if (i==1)
+        										return d3.selectAll(".playa")[0][i].getAttribute("cx");
+        									else
+        										return d3.selectAll(".playa")[0][i].getAttribute("cx");
+		        							 })
+		        .attr("y", function(d,i){	if (i==0)
+        										return d3.selectAll(".playa")[0][i].getAttribute("cy")-90; 
+        									else if (i==1)
+        										return d3.selectAll(".playa")[0][i].getAttribute("cy")-(-90);
+        									else
+        										return d3.selectAll(".playa")[0][i].getAttribute("cy")-(-90);
+		        							})
+		        .attr("dy", 7)
+				.style("font-weight", "bold");
 
 
 

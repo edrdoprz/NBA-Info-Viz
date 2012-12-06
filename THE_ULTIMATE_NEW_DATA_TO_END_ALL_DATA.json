@@ -1,6 +1,6 @@
 {
-	"overview" : {
-		"2012" : {
+	"overview" : [
+		{
 			"year" : 2012,
 			"winner" : "Miami Heat",
 			"teams": [
@@ -3102,7 +3102,7 @@
 				}
 			]
 		},
-		"2011" : {
+		{
 			"year" : 2011,
 			"winner" : "Dallas Mavericks",
 			"teams": [
@@ -6100,7 +6100,7 @@
 				}
 			]
 		},
-		"2010" : {
+		{
 			"year" : 2010,
 			"winner" : "Los Angeles Lakers",
 			"teams": [
@@ -9150,7 +9150,7 @@
 				}
 			]
 		},
-		"2009" : {
+		{
 			"year" : 2009,
 			"winner" : "Los Angeles Lakers",
 			"teams": [
@@ -12226,7 +12226,7 @@
 				}
 			]
 		},
-		"2008" : {
+		{
 			"year" : 2008,
 			"winner" : "Boston Celtics",
 			"teams": [
@@ -15298,9 +15298,9 @@
 							"turnovers" : 0.5,
 							"foulsCommitted" : 1.2
 						}
+						]
+					}
 					]
 				}
-			]
-		}
-	}
-}
+				]
+			};

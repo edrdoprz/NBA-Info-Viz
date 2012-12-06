@@ -15482,7 +15482,20 @@
 											})
 			.on("click", disappearYear);
 			
-		
+		var tmpNumber = 0;
+		seasonYears.append("clipPath")
+			.attr("id", function() { return "clipping"+tmpNumber++; })
+			.append("svg:circle")
+				.attr("r", yearCircleR)
+		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
+										})
+				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											console.log("CX: " + this.getAttribute("cx"));
+											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);
+										});
+
+
 		// adding year circles to g elements
 		seasonYears.append("svg:circle")
 	        .style("stroke", "gray")

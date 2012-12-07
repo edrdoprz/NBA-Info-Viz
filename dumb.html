@@ -15442,7 +15442,7 @@
 	        .attr("width", svgWidth)
 	        .attr("height", svgHeight)
 			.append("circle")
-			.style("stroke", "gray")
+			.style("stroke", "black")
 	        .style("fill", "none")
 			.attr("class", "historyCircle")
 			.attr("r", 	bigCircleR)
@@ -15482,25 +15482,14 @@
 											})
 			.on("click", disappearYear);
 			
-		var tmpNumber = 0;
-		seasonYears.append("clipPath")
-			.attr("id", function() { return "clipping"+tmpNumber++; })
-			.append("svg:circle")
-				.attr("r", yearCircleR)
-		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
-										})
-				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
-											console.log("CX: " + this.getAttribute("cx"));
-											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);
-										});
+
 
 
 		// adding year circles to g elements
 		seasonYears.append("svg:circle")
-	        .style("stroke", "gray")
+	        .style("stroke", "black")
 			.style("stroke-width", 3)
-	        .style("fill", "white")
+	        .style("fill", "none")
 			.attr("data-year", function(d){ return d.year; })
 			.attr("class", "yearCircle")
 	        .attr("r", yearCircleR)
@@ -15602,10 +15591,56 @@
 																	  useStats[i][4][0]); })
 				.on("mouseout", function(d,i){ $('#context').html("<h1>"+contextYear+"</h1>"); });
 			
+
+
 			seasonTeams.append("svg:circle")
-		        .style("stroke", "gray")
+		        .style("stroke", "none")
 				.style("stroke-width", 3)
 		        .style("fill", "white")
+				.attr("class", "teamfakeCircle")
+				.attr("data-teamnumber", function(d,i) { return i; })
+		        .attr("r", 	teamCircleR)
+		        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX); })
+				.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY); });
+
+			
+			var tmpNumber = 0;
+			seasonTeams.append("clipPath")
+				.attr("id", function() { return "clipping"+tmpNumber++; })
+				.append("svg:circle")
+					.attr("r", teamCircleR)
+			        .attr("cx", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+												return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX);
+											})
+					.attr("cy", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+												console.log("CX: " + this.getAttribute("cx"));
+												return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY);
+											});
+
+
+			seasonTeams.append("image")
+				.attr("clip-path", function(d,i) { return "url(#clipping"+i+")"; })
+				.attr("x", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											return Math.round(bigCircleR * Math.cos(radian) + bigCircleCX)-75;
+										})
+				.attr("y", function(d,i){	radian = 2 * i * Math.PI/arrayLength - Math.PI/2;
+											console.log("CX: " + this.getAttribute("cx"));
+											return Math.round(bigCircleR * Math.sin(radian) + bigCircleCY)-75;
+										})
+				.attr("width", 150)
+				.attr("height", 150)
+				.attr("xlink:href", "Logos/Small/Mavericks%20Small.gif")
+				.style("opacity", .2);
+
+
+			
+
+			seasonTeams.append("svg:circle")
+		        .style("stroke", "black")
+				.style("stroke-width", 3)
+		        .style("fill", "none")
 				.attr("class", "teamCircle")
 				.attr("data-teamnumber", function(d,i) { return i; })
 		        .attr("r", 	teamCircleR)
@@ -15684,9 +15719,9 @@
 			var tempCY = 0;
 			var tempR = 0;
 			seasonTeams.append("svg:circle")
-				.style("stroke", "gray")
+				.style("stroke", "black")
 				.style("stroke-width", 1)
-				.style("fill", function(){	return "white"; })
+				.style("fill", function(){	return "none"; })
 				.attr("data-black", 0)
 				.attr("class", "avgstatsCircle")
 				.attr("r", 	function(d,i){	tempR = 30;
@@ -15716,8 +15751,8 @@
 				.data(function(d,i) {	return useStats[i]; })
 				.enter()
 				.append("svg:circle")
-				.style("stroke", "gray")
-				.style("fill", "gray")
+				.style("stroke", "black")
+				.style("fill", "black")
 				.attr("class", "avgstat")
 				.attr("r", 	function(d,i) {	var val = 0;
 											switch(i)
